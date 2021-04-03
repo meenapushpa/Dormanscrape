@@ -18,94 +18,91 @@ from scrapy.core.downloader.handlers.http11 import TunnelError
 from django.db import IntegrityError
 from twisted.web._newclient import ResponseNeverReceived
 from twisted.internet.error import TimeoutError
-
 from scrapy import logformatter
 
 
-
 class RetryMiddleware(object):
-	def __init__(self, proxy_list):
-		self.proxy_list = proxy_list
+    def __init__(self, proxy_list):
+        self.proxy_list = proxy_list
 
-	@classmethod
-	def from_crawler(cls, crawler):
-		# This method is used by Scrapy to create your spiders.
-		settings = crawler.settings
+    @classmethod
+    def from_crawler(cls, crawler):
+        # This method is used by Scrapy to create your spiders.
+        settings = crawler.settings
+        if not settings.getlist('PROXY_LIST'):
+            proxy_list = str(freeproxy.FreeProxy('url'))
+            raise KeyError('PROXY_LIST setting is missing, choosing free proxy')
+        proxy_list = settings.getlist('PROXY_LIST')
+        return cls(proxy_list)
 
-		if not settings.getlist('PROXY_LIST'):
-			raise KeyError('PROXY_LIST setting is missing')
+    def process_exception(self, request, exception, spider):
+        if (isinstance(exception, TimeoutError) or isinstance(exception, TunnelError) or isinstance(exception, ResponseNeverReceived)) \
+                and 'dont_retry' not in request.meta:
+            request.meta['proxy'] = self.proxy_list
+        elif (isinstance(exception, IntegrityError)):
+            message = 'Duplicate: %s' % response.url
+            logging.info(message)
 
-		proxy_list = freeproxy.FreeProxy('list')
-		return cls(proxy_list)
+            return request
 
-	def process_exception(self, request, exception, spider):
-		if ( isinstance(exception, TimeoutError) or isinstance(exception, TunnelError)  or isinstance(exception, ResponseNeverReceived) ) \
-				and 'dont_retry' not in request.meta:
-			request.meta['proxy'] = random.choice(self.proxy_list)
-		elif ( isinstance(exception, IntegrityError) ):
-			message = 'Duplicate: %s'%response.url
-			logging.info(message)
-
-			return request
 
 class ProxyMiddleware(object):
-	# Not all methods need to be defined. If a method is not defined,
-	# scrapy acts as if the spider middleware does not modify the
-	# passed objects.
-	def __init__(self, proxy_list):
-		self.proxy_list = proxy_list
+    # Not all methods need to be defined. If a method is not defined,
+    # scrapy acts as if the spider middleware does not modify the
+    # passed objects.
+    def __init__(self, proxy_list):
+        self.proxy_list = proxy_list
 
-	@classmethod
-	def from_crawler(cls, crawler):
-		# This method is used by Scrapy to create your spiders.
-		settings = crawler.settings
+    @classmethod
+    def from_crawler(cls, crawler):
+        # This method is used by Scrapy to create your spiders.
+        settings = crawler.settings
+        if not settings.getlist('PROXY_LIST'):
+            proxy_list = str(freeproxy.FreeProxy('url'))
+            raise KeyError('PROXY_LIST setting is missing')
+        proxy_list = settings.getlist('PROXY_LIST')
+        s = cls(proxy_list)
+        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        return s
 
-		if not settings.getlist('PROXY_LIST'):
-			raise KeyError('PROXY_LIST setting is missing')
+    def process_spider_input(response, spider):
+        # Called for each response that goes through the spider
+        # middleware and into the spider.
 
-		proxy_list = freeproxy.FreeProxy('list')
-		s = cls(proxy_list)
-		crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
-		return s
+        # Should return None or raise an exception.
+        return None
 
-	def process_spider_input(response, spider):
-		# Called for each response that goes through the spider
-		# middleware and into the spider.
+    def process_spider_output(response, result, spider):
+        # Called with the results returned from the Spider, after
+        # it has processed the response.
 
-		# Should return None or raise an exception.
-		return None
+        # Must return an iterable of Request, dict or Item objects.
+        for i in result:
+            yield i
 
-	def process_spider_output(response, result, spider):
-		# Called with the results returned from the Spider, after
-		# it has processed the response.
+    def process_spider_exception(response, exception, spider):
+        # Called when a spider or process_spider_input() method
+        # (from other spider middleware) raises an exception.
 
-		# Must return an iterable of Request, dict or Item objects.
-		for i in result:
-			yield i
+        # Should return either None or an iterable of Response, dict
+        # or Item objects.
+        pass
 
-	def process_spider_exception(response, exception, spider):
-		# Called when a spider or process_spider_input() method
-		# (from other spider middleware) raises an exception.
+    def process_start_requests(start_requests, spider):
+        # Called with the start requests of the spider, and works
+        # similarly to the process_spider_output() method, except
+        # that it doesn’t have a response associated.
 
-		# Should return either None or an iterable of Response, dict
-		# or Item objects.
-		pass
+        # Must return only requests (not items).
+        for r in start_requests:
+            yield r
 
-	def process_start_requests(start_requests, spider):
-		# Called with the start requests of the spider, and works
-		# similarly to the process_spider_output() method, except
-		# that it doesn’t have a response associated.
+    def process_request(self, request, spider):
+        # Don't overwrite with a random one (server-side state for IP)
+        if 'proxy' in request.meta:
+            return
+        request.meta['proxy'] = random.choice(self.proxy_list)
 
-		# Must return only requests (not items).
-		for r in start_requests:
-			yield r
+    def spider_opened(self, spider):
+        spider.logger.info('Spider opened: %s' % spider.name)
 
-	def process_request(self, request, spider):
-		# Don't overwrite with a random one (server-side state for IP)
-		if 'proxy' in request.meta:
-			return
-
-		request.meta['proxy'] = random.choice(self.proxy_list)
-
-	def spider_opened(self, spider):
-		spider.logger.info('Spider opened: %s' % spider.name)
