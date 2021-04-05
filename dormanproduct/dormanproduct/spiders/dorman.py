@@ -29,6 +29,7 @@ class DormanSpider(scrapy.Spider):
     def start_requests(self):
         for code in self.productcodes:
             url = self.url_template.format(code)
+            print(url)
             yield scrapy.Request(url, callback=self.parse_listing)
 
     def parse_listing(self, response):

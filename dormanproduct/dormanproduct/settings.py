@@ -17,7 +17,7 @@ BOT_NAME = 'dormanproduct'
 SPIDER_MODULES = ['dormanproduct.spiders']
 NEWSPIDER_MODULE = 'dormanproduct.spiders'
 
-USER_AGENT_LIST = "../misc/useragents.txt"
+USER_AGENT_LIST = "./misc/useragents.txt"
 ROBOTSTXT_OBEY = False
 
 DOWNLOADER_MIDDLEWARES = {
@@ -38,7 +38,7 @@ RETRY_HTTP_CODES = [500, 502, 503, 504, 400, 404, 408]
 
 
 FEED_FORMAT = 'json'
-FEED_URI = 'data/%s.json' % datetime.utcnow().strftime('%Y-%d-%mT%H-%M-%S')  # WHERE to store the export file
+#FEED_URI = 'data/%s.json' % datetime.utcnow().strftime('%Y-%d-%mT%H-%M-%S')  # WHERE to store the export file
 
 REDIRECT_ENABLED = True
 REFERER_ENABLED = False
@@ -51,3 +51,7 @@ if PROXY_LIST:
     DOWNLOADER_MIDDLEWARES['dormanproduct.middlewares.RetryMiddleware'] = 200
     DOWNLOADER_MIDDLEWARES['dormanproduct.middlewares.ProxyMiddleware'] = 100
 
+HTTPCACHE_ENABLED = True
+HTTPCACHE_EXPIRATION_SECS = 60 * 60 * 24 * 7
+HTTPCACHE_DIR = 'httpcache'
+CLOSESPIDER_PAGECOUNT = 32
