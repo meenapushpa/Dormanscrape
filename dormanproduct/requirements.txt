@@ -1,0 +1,11 @@
+Django==3.1.7
+lxml==4.2.5
+pip==21.0.1
+Scrapy==1.5.1
+scrapy-random-useragent==0.2
+setuptools-rust==0.11.6
+Twisted==21.2.0
+regex==2021.3.17
+requests==2.25.1
+requests-toolbelt==0.9.1
+
