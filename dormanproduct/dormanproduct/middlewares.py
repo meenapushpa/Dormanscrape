@@ -18,26 +18,33 @@ from scrapy.core.downloader.handlers.http11 import TunnelError
 from django.db import IntegrityError
 from twisted.web._newclient import ResponseNeverReceived
 from twisted.internet.error import TimeoutError
-from scrapy import logformatter
 
 
 class RetryMiddleware(object):
     def __init__(self, proxy_list):
         self.proxy_list = proxy_list
+        print(self.proxy_list)
 
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
         settings = crawler.settings
+        newproxy = []
         if not settings.getlist('PROXY_LIST'):
-            proxy_list = str(freeproxy.FreeProxy('url'))
-            raise KeyError('PROXY_LIST setting is missing, choosing free proxy')
-        proxy_list = settings.getlist('PROXY_LIST')
+            proxylist = str(freeproxy.FreeProxy('url'))
+            if proxylist not in newproxy:
+                newproxy.append(proxylist)
+                proxy_list = proxylist
+        else:
+            proxy_list = settings.getlist('PROXY_LIST')
         return cls(proxy_list)
 
     def process_exception(self, request, exception, spider):
-        if (isinstance(exception, TimeoutError) or isinstance(exception, TunnelError) or isinstance(exception, ResponseNeverReceived)) \
-                and 'dont_retry' not in request.meta:
+        if (isinstance(exception,
+                       TimeoutError) or isinstance(exception,
+                                                   TunnelError) or isinstance(exception,
+                                                                              ResponseNeverReceived)) and 'dont_retry' not in request.meta:
+            print('timeout error:', self.proxy_list)
             request.meta['proxy'] = self.proxy_list
         elif (isinstance(exception, IntegrityError)):
             message = 'Duplicate: %s' % response.url
@@ -57,10 +64,14 @@ class ProxyMiddleware(object):
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
         settings = crawler.settings
+        newproxy = []
         if not settings.getlist('PROXY_LIST'):
-            proxy_list = str(freeproxy.FreeProxy('url'))
-            raise KeyError('PROXY_LIST setting is missing')
-        proxy_list = settings.getlist('PROXY_LIST')
+            proxylist = str(freeproxy.FreeProxy('url'))
+            if proxylist not in newproxy:
+                newproxy.append(proxylist)
+                proxy_list = proxylist
+        else:
+            proxy_list = settings.getlist('PROXY_LIST')
         s = cls(proxy_list)
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
         return s
@@ -101,8 +112,7 @@ class ProxyMiddleware(object):
         # Don't overwrite with a random one (server-side state for IP)
         if 'proxy' in request.meta:
             return
-        request.meta['proxy'] = random.choice(self.proxy_list)
+        request.meta['proxy'] = self.proxy_list
 
     def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)
-
+        logging.info('Spider opened: %s' % spider.name)

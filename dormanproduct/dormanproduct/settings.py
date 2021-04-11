@@ -23,8 +23,12 @@ ROBOTSTXT_OBEY = False
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'random_useragent.RandomUserAgentMiddleware': 400,
+    'dormanproduct.middlewares.RetryMiddleware': 200,
+    'dormanproduct.middlewares.ProxyMiddleware': 100
 }
-LOG_LEVEL = 'WARNING'
+LOG_ENABLED = True
+LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'DEBUG'
 
 CONCURRENT_REQUESTS = 20
 CONCURRENT_REQUESTS_PER_DOMAIN = 20
@@ -37,7 +41,7 @@ RETRY_TIMES = 10
 RETRY_HTTP_CODES = [500, 502, 503, 504, 400, 404, 408]
 
 
-FEED_FORMAT = 'json'
+#FEED_FORMAT = 'json'
 #FEED_URI = 'data/%s.json' % datetime.utcnow().strftime('%Y-%d-%mT%H-%M-%S')  # WHERE to store the export file
 
 REDIRECT_ENABLED = True
@@ -46,12 +50,8 @@ REFERER_ENABLED = False
 COOKIES_ENABLED = False
 COOKIES_DEBUG = False
 
-PROXY_LIST = ['http://15.185.193.6:3128/', 'http://165.225.77.47:9443/']
-if PROXY_LIST:
-    DOWNLOADER_MIDDLEWARES['dormanproduct.middlewares.RetryMiddleware'] = 200
-    DOWNLOADER_MIDDLEWARES['dormanproduct.middlewares.ProxyMiddleware'] = 100
+#PROXY_LIST = ['http://202.61.51.204:3128/','http://177.191.190.191:3128/']
+# if PROXY_LIST:
+#    DOWNLOADER_MIDDLEWARES['dormanproduct.middlewares.RetryMiddleware'] = 200
+#    DOWNLOADER_MIDDLEWARES['dormanproduct.middlewares.ProxyMiddleware'] = 100
 
-HTTPCACHE_ENABLED = True
-HTTPCACHE_EXPIRATION_SECS = 60 * 60 * 24 * 7
-HTTPCACHE_DIR = 'httpcache'
-CLOSESPIDER_PAGECOUNT = 32

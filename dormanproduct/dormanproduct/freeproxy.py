@@ -15,7 +15,7 @@ class FreeProxy(object):
           freeresponse = requests.get(freeurl, verify=False)
           freeparser = fromstring(freeresponse.text)
           freeproxies = []
-          for i in freeparser.xpath('//tbody/tr')[:20]:
+          for i in freeparser.xpath('//tbody/tr')[:10]:
               if i.xpath('.//td[7][contains(text(),"yes")]'):
                   freeproxy = ":".join([i.xpath('.//td[1]/text()')[0], i.xpath('.//td[2]/text()')[0]])
               try:

@@ -61,8 +61,9 @@ layers:
 functions:
   dormanscrape:
     handler: launcher.scrape
-    layers:
-      - arn:aws:lambda:eu-west-1:688687062688:layer:dormanscrape:5
+    #layers:
+    #  - arn:aws:lambda:eu-west-1:688687062688:layer:dormanscrape:5
+    timeout: 600
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
