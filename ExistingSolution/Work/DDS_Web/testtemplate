@@ -1,0 +1,206 @@
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Parser</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+</head>
+<body>
+<nav>
+    <div class="container nav-wrapper">
+        <a href="/" class="brand-logo">Six Sites</a>
+        <ul id="nav-mobile" class="right">
+            <li><a href="/">Home</a></li>
+        </ul>
+    </div>
+</nav>
+
+<ul id="slide-out" class="sidenav">
+    <li><a href="#!"><i class="material-icons">file_download</i>Result File List</a></li>
+    <li><div class="divider"></div></li>
+    {% block filelist %}
+        {% for file in files %}
+            <li><a class="waves-effect" href="{% static 'result/' %}{{ file }}">{{ file }}</a></li>
+        {% endfor %}
+    {% endblock filelist %}
+</ul>
+
+<div class="container" style="width: 90%; max-width:1440px;">
+    <h1 style="text-align: center">Which site would you like to search?</h1>
+    <div class="row">
+        <div class="col s2">
+            <div class="center">
+                <div class="site_logo5">
+                    <a href="https://www.dormanproducts.com/" target="_blank">
+                        <img src="{% static 'img/dorman_logo.gif' %}">
+                    </a>
+                </div>
+                <p>4. dormanproducts.com</p>
+                <p class="light center"></p>
+            </div>
+        </div>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col s2">
+                <div class="center">
+                    <label>
+                        <input type="checkbox" class="filled-in" id="ckb_site4" name="ckb_site4">
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+        <div class="col s4">
+            <div class="file-field input-field">
+                <div class="btn">
+                    <span>File</span>
+                    <input type="file" accept=".xls,.xlsx" name="input_file">
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" placeholder="Upload File">
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="row">
+            <div class="col s2">
+                <!--<button class="btn waves-effect waves-light">Search
+                    <i class="material-icons right">search</i>
+                </button>-->
+                <a class="btn waves-effect waves-light" id="btnSearch">Search
+                    <i class="material-icons right">search</i>
+                </a>
+            </div>
+            <a href="#" data-target="slide-out" class="sidenav-trigger btn-floating btn-small">
+                <i class="material-icons">menu</i>
+            </a>
+            </div>
+            <div class="col s4" id="preloader">
+                <div class="row>">
+                    <div class="col s1">
+                        <div class="preloader-wrapper small">
+                            <div class="spinner-layer spinner-green-only">
+                                <div class="circle-clipper left">
+                                    <div class="circle"></div>
+                                </div><div class="gap-patch">
+                                    <div class="circle"></div>
+                                </div><div class="circle-clipper right">
+                                    <div class="circle"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s11">
+                        <pre id="server_status" class="hide"></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="col s2">
+                <a class="btn waves-effect waves-light red hide" id="btnStop">Stop
+                    <i class="material-icons right">close</i>
+                </a>
+            </div>
+    </form>
+
+    {% block content4 %}
+    {% endblock content4 %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+    var statusTimer;
+    $(document).ready(function(){
+        $('.sidenav').sidenav();
+        $('.modal').modal();
+    });
+
+    function onSave() {
+        $.ajax({
+            url: "save_userinfo",
+            type : "POST",
+            dataType: 'json',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                username: $("#login_name").val(),
+                password: $("#login_pass").val()
+            },
+            success: function (data) {
+                if (data.status) {
+                    $("#login_name_org").val($("#login_name").val());
+                    $("#login_pass_org").val($("#login_pass").val());
+                    alert("Saved successfully!");
+                }
+            }
+        });
+    }
+
+    function onCancel() {
+        $("#login_name").val($("#login_name_org").val());
+        $("#login_pass").val($("#login_pass_org").val());
+    }
+
+    $("#btnSearch").click(function(){
+        $("#btnSearch").addClass('disabled');
+
+        $('.preloader-wrapper').addClass('active');
+        $('#server_status').removeClass('hide');
+        $('#btnStop').removeClass('hide');
+
+        var form = $(this).closest("form");
+        form.submit();
+
+        statusTimer = setInterval(getStatus, 1000);
+    });
+
+    function getStatus() {
+        $.ajax({
+            url: "get_status",
+            type: "GET",
+            dataType: 'json',
+            success: function (data) {
+                $.each(data, function(name, value) {
+                    if (name == "status" && value) {
+                        //console.log(value + "\n");
+                        $('#server_status').append(value + "\n");
+                        $('#server_status').animate({ scrollTop: $("#server_status").prop("scrollHeight") });
+                    }
+                });
+            }
+        });
+    }
+
+    $("#btnStop").click(function(){
+        clearInterval(statusTimer);
+
+        $.ajax({
+            url: "stop_search",
+            type : "POST",
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (data) {
+                if (data.status) {
+                    $('.preloader-wrapper').removeClass('active');
+                    $('#server_status').addClass('disabled');
+                    $('#btnStop').addClass('disabled');
+
+                    $('#preloader').html("<div class='progress' style='margin-top: 15px;'><div class='indeterminate'></div></div>");
+                }
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block filelist %}
+    {% for file in files %}
+        <li><a class="waves-effect" href="{% static 'result/' %}{{ file }}">{{ file }}</a></li>
+    {% endfor %}
+{% endblock filelist %}
+
+{% block content1 %}
+    {% for site_postings in final_postings %}
+        {% if forloop.counter == 1 and site_postings|length > 0 %}
+
+            <h2 style="text-align: center">www.fme-cat.com</h2>
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mfr Part</th>
+                            <th>Our Part</th>
+                            <th>Mfr Name</th>
+                            <th>Product Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for post in site_postings %}
+                        <tr>
+                            {% for key in post %}
+                            <td>{{ key }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% endif %}
+    {% endfor %}
+{% endblock content1 %}
+
+{% block content2 %}
+    {% for site_postings in final_postings %}
+        {% if forloop.counter == 2 and site_postings|length > 0 %}
+
+            <h2 style="text-align: center">www.fme-cat.mx</h2>
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Referencia del fabricante</th>
+                            <th>Tipo de producto</th>
+                            <th>Referencia Nombre</th>
+                            <th>Nuestra parte</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for post in site_postings %}
+                        <tr>
+                            {% for key in post %}
+                            <td>{{ key }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% endif %}
+    {% endfor %}
+{% endblock content2 %}
+
+{% block content3 %}
+    {% for site_postings in final_postings %}
+        {% if forloop.counter == 3 and site_postings|length > 0 %}
+
+            <h2 style="text-align: center">partsonline.mevotech.com</h2>
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>original part number</th>
+                            <th>partNo</th>
+                            <th>brandName</th>
+                            <th>productDescr</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for post in site_postings %}
+                        <tr>
+                            {% for key in post %}
+                            <td>{{ key }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% endif %}
+    {% endfor %}
+{% endblock content3 %}
+
+{% block content4 %}
+    {% for site_postings in final_postings %}
+        {% if forloop.counter == 4 and site_postings|length > 0 %}
+
+            <h2 style="text-align: center">dormanproducts.com</h2>
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>original part number</th>
+                            <th>Product Name</th>
+                            <th>Product Info</th>
+                            <th>Application Summary</th>
+                            <th>Cross</th>
+                            <th>Part No</th>
+                            <th>Mfr Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for post in site_postings %}
+                        <tr>
+                            {% for key in post %}
+                            <td>{{ key }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% endif %}
+    {% endfor %}
+{% endblock content4 %}
+
+{% block content5 %}
+    {% for site_postings in final_postings %}
+        {% if forloop.counter == 5 and site_postings|length > 0 %}
+            <h2 style="text-align: center">nexcat.com</h2>
+            {% if new_search %}
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>part number</th>
+                                <th>Brand</th>
+                                <th>Title</th>
+                                <th>Manufacturer</th>
+                                <th>AM Part Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for post in site_postings %}
+                            <tr>
+                                {% for key in post %}
+                                <td>{{ key }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>original part number</th>
+                                <th>OE Part Number</th>
+                                <th>AM Part Number</th>
+                                <th>Manufacturer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for post in site_postings %}
+                            <tr>
+                                {% for key in post %}
+                                <td>{{ key }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endblock content5 %}
+
+{% block content6 %}
+    {% for site_postings in final_postings %}
+        {% if forloop.counter == 6 and site_postings|length > 0 %}
+
+            <h2 style="text-align: center">showmetheparts.com/trw</h2>
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Make</th>
+                            <th>Model</th>
+                            <th>Product</th>
+                            <th>Part Number</th>
+                            <th>Part Type</th>
+                            <th>Application</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for post in site_postings %}
+                        <tr>
+                            {% for key in post %}
+                            <td>{{ key }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% endif %}
+    {% endfor %}
+{% endblock content6 %}

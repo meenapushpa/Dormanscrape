@@ -7,17 +7,18 @@ from urllib.parse import urlparse
 from datetime import datetime
 import scrapy
 import scrapy.crawler as crawler
-from scrapy.crawler import CrawlerProcess,CrawlerRunner
+
 from twisted.internet import reactor
-from multiprocessing import Process, Queue
 from scrapy.spiderloader import SpiderLoader
 from scrapy.utils.project import get_project_settings
-from scrapy.utils.log import configure_logging
-from scrapy import signals
-import time
-from pydispatch import dispatcher
-from crochet import setup
-setup()
+
+def inputcodes(filepath):
+    productcodes = []
+    with open(filepath, 'r') as fp:
+        next(fp)
+        productcodes = [x.replace('\n', '') for x in fp.readlines()]
+    return productcodes
+
 def chunkIt(seq, num):
     avg = len(seq) / float(num)
     out = []
@@ -27,26 +28,17 @@ def chunkIt(seq, num):
         last += avg
     return out
 
-
-def crawl(itemlist,output_filename,settings={},spider_name='dorman'):
-    os.environ['SCRAPY_SETTINGS_MODULE'] = 'scraper.dormanproject.settings'
+def crawl(settings={}, spider_name="dorman",list1,output):
     project_settings = get_project_settings()
-    project_settings.update({
-        'DOWNLOAD_DIR': output_filename
-        })
     spider_loader = SpiderLoader(project_settings)
     spider_cls = spider_loader.load(spider_name)
-
-    runner = CrawlerRunner(project_settings)
     split_urls = []
     try:
-        split_urls = chunkIt(itemlist, 9)
-        for index in split_urls:
-            print('Iteration -',index)
-            configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
-            runner.crawl(spider_cls, index)
-            time.sleep(60)
-        #runner.start()
-    
-    except Exception as e:
-        print(e)
+        input_parse = inputcodes(filename)
+        split_urls = chunkIt(list1, 10)
+    except Exception:
+        logging.exception("Spider or kwargs need input csv file to start.")
+    for index in split_urls:
+        print(index, 'Iteration is happening!!!')
+        runner = crawler.CrawlerRunner(project_settings)
+        runner.crawl(spider_cls, index,output)

@@ -1,0 +1,368 @@
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Parser</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+</head>
+<body>
+<nav>
+    <div class="container nav-wrapper">
+        <a href="/" class="brand-logo">Six Sites</a>
+        <ul id="nav-mobile" class="right">
+            <li><a href="/">Home</a></li>
+        </ul>
+    </div>
+</nav>
+
+<ul id="slide-out" class="sidenav">
+    <li><a href="#!"><i class="material-icons">file_download</i>Result File List</a></li>
+    <li><div class="divider"></div></li>
+    {% block filelist %}
+        {% for file in files %}
+            <li><a class="waves-effect" href="{% static 'result/' %}{{ file }}">{{ file }}</a></li>
+        {% endfor %}
+    {% endblock filelist %}
+</ul>
+
+<div class="container" style="width: 90%; max-width:1440px;">
+    <h1 style="text-align: center">Which site would you like to search?</h1>
+    <div class="row">
+        <div class="col s2">
+            <div class="center">
+                <div class="site_logo1">
+                    <a href="https://fme-cat.com/" target="_blank">
+                        <img src="{% static 'img/driv-logo.png' %}">
+                    </a>
+                </div>
+                <p>1. www.fme-cat.com</p>
+            </div>
+        </div>
+
+        <div class="col s2">
+            <div class="center">
+                <div class="site_logo2">
+                    <a href="http://www.fme-cat.mx/" target="_blank">
+                        <img src="{% static 'img/driv-logo.png' %}">
+                    </a>
+                </div>
+                <p>2. www.fme-cat.mx</p>
+            </div>
+        </div>
+
+        <div class="col s2">
+            <div class="center">
+                <div class="site_logo3">
+                    <a href="https://partsonline.mevotech.com/" target="_blank">
+                        <img src="{% static 'img/logo.729faf23.png' %}">
+                    </a>
+                </div>
+                <p>3. partsonline.mevotech</p>
+            </div>
+        </div>
+
+        <div class="col s2">
+            <div class="center">
+                <div class="site_logo5">
+                    <a href="https://www.dormanproducts.com/" target="_blank">
+                        <img src="{% static 'img/dorman_logo.gif' %}">
+                    </a>
+                </div>
+                <p>4. dormanproducts.com</p>
+                <p class="light center"></p>
+            </div>
+        </div>
+
+        <div class="col s2">
+            <div class="center">
+                <div class="site_logo4">
+                    <a href="https://nexcat.com/" target="_blank">
+                        <img src="{% static 'img/login_nexcat_logo.png' %}">
+                    </a>
+                </div>
+                <p>
+                5. nexcat.net
+                <a href="javascript:void(0);" data-target="login_info_modal" class="login_info modal-trigger">(Login Info)</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="col s2">
+            <div class="center">
+                <div class="site_logo6">
+                    <a href="http://showmetheparts.com/trw/" target="_blank">
+                        <img src="{% static 'img/TRW.png' %}">
+                    </a>
+                </div>
+                <p>6. showmetheparts.com</p>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col s2">
+                <div class="center">
+                    <label>
+                        <input type="checkbox" class="filled-in" id="ckb_site1" name="ckb_site1">
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="col s2">
+                <div class="center">
+                    <label>
+                        <input type="checkbox" class="filled-in" id="ckb_site2" name="ckb_site2">
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="col s2">
+                <div class="center">
+                    <label>
+                        <input type="checkbox" class="filled-in" id="ckb_site3" name="ckb_site3">
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="col s2">
+                <div class="center">
+                    <label>
+                        <input type="checkbox" class="filled-in" id="ckb_site4" name="ckb_site4">
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="col s2">
+                <div class="center">
+                    <label>
+                        <input type="checkbox" class="filled-in" id="ckb_site5" name="ckb_site5">
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="col s2">
+                <div class="center">
+                    <label>
+                        <input type="checkbox" class="filled-in" id="ckb_site6" name="ckb_site6">
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col s8 input-field">
+            <input type="text" name="search" placeholder="Paste Part Number Here" value="{{ search }}">
+            </div>
+            <div class="col s4">
+                <div class="file-field input-field">
+                    <div class="btn">
+                        <span>File</span>
+                        <input type="file" accept=".xls,.xlsx" name="input_file">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Upload File">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s2">
+                <!--<button class="btn waves-effect waves-light">Search
+                    <i class="material-icons right">search</i>
+                </button>-->
+                <a class="btn waves-effect waves-light" id="btnSearch">Search
+                    <i class="material-icons right">search</i>
+                </a>
+            </div>
+            <div class="col s4" style="padding-top: 10px;">
+                <div row style="margin-top: -20px;">
+                    <label>
+                        <input type="checkbox" class="filled-in" id="ckb_db" name="ckb_db">
+                        <span>Search in database</span>
+                    </label>
+                    <p></p>
+                    <label style="margin-top:3px;">
+                        <input type="checkbox" class="filled-in" checked="checked" id="ckb_autonew" name="ckb_autonew">
+                        <span>Auto Save as New Name</span>
+                    </label>
+                    <a href="#" data-target="slide-out" class="sidenav-trigger btn-floating btn-small">
+                        <i class="material-icons">menu</i>
+                    </a>
+                </div>
+            </div>
+            <div class="col s4" id="preloader">
+                <div class="row>">
+                    <div class="col s1">
+                        <div class="preloader-wrapper small">
+                            <div class="spinner-layer spinner-green-only">
+                                <div class="circle-clipper left">
+                                    <div class="circle"></div>
+                                </div><div class="gap-patch">
+                                    <div class="circle"></div>
+                                </div><div class="circle-clipper right">
+                                    <div class="circle"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s11">
+                        <pre id="server_status" class="hide"></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="col s2">
+                <a class="btn waves-effect waves-light red hide" id="btnStop">Stop
+                    <i class="material-icons right">close</i>
+                </a>
+            </div>
+        </div>
+    </form>
+
+    {% block content %}
+    {% endblock content %}
+
+    {% block content1 %}
+    {% endblock content1 %}
+
+    {% block content2 %}
+    {% endblock content2 %}
+
+    {% block content3 %}
+    {% endblock content3 %}
+
+    {% block content4 %}
+    {% endblock content4 %}
+
+    {% block content5 %}
+    {% endblock content5 %}
+
+    {% block content6 %}
+    {% endblock content6 %}
+
+</div>
+
+<!-- Modal Structure -->
+<div id="login_info_modal" class="modal">
+    <div class="modal-content">
+        <h4>Nexcat Login Info</h4>
+        <div class="input-field col s6">
+            <input id="login_name" type="text" class="validate" value="{{ username }}">
+            <label for="login_name">Username</label>
+        </div>
+        <div class="input-field col s6">
+            <input id="login_pass" type="text" class="validate" value="{{ password }}">
+            <label for="login_pass">Password</label>
+        </div>
+
+        <input type="hidden" id="login_name_org" value="{{ username }}">
+        <input type="hidden" id="login_pass_org" value="{{ password }}">
+    </div>
+    <div class="modal-footer">
+        <a href="javascript:onSave();" class="modal-close waves-effect waves-green btn-flat">Save</a>
+        <a href="javascript:onCancel();" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+    var statusTimer;
+    $(document).ready(function(){
+        $('.sidenav').sidenav();
+        $('.modal').modal();
+    });
+
+    function onSave() {
+        $.ajax({
+            url: "save_userinfo",
+            type : "POST",
+            dataType: 'json',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                username: $("#login_name").val(),
+                password: $("#login_pass").val()
+            },
+            success: function (data) {
+                if (data.status) {
+                    $("#login_name_org").val($("#login_name").val());
+                    $("#login_pass_org").val($("#login_pass").val());
+                    alert("Saved successfully!");
+                }
+            }
+        });
+    }
+
+    function onCancel() {
+        $("#login_name").val($("#login_name_org").val());
+        $("#login_pass").val($("#login_pass_org").val());
+    }
+
+    $("#btnSearch").click(function(){
+        $("#btnSearch").addClass('disabled');
+
+        $('.preloader-wrapper').addClass('active');
+        $('#server_status').removeClass('hide');
+        $('#btnStop').removeClass('hide');
+
+        var form = $(this).closest("form");
+        form.submit();
+
+        statusTimer = setInterval(getStatus, 1000);
+    });
+
+    function getStatus() {
+        $.ajax({
+            url: "get_status",
+            type: "GET",
+            dataType: 'json',
+            success: function (data) {
+                $.each(data, function(name, value) {
+                    if (name == "status" && value) {
+                        //console.log(value + "\n");
+                        $('#server_status').append(value + "\n");
+                        $('#server_status').animate({ scrollTop: $("#server_status").prop("scrollHeight") });
+                    }
+                });
+            }
+        });
+    }
+
+    $("#btnStop").click(function(){
+        clearInterval(statusTimer);
+
+        $.ajax({
+            url: "stop_search",
+            type : "POST",
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (data) {
+                if (data.status) {
+                    $('.preloader-wrapper').removeClass('active');
+                    $('#server_status').addClass('disabled');
+                    $('#btnStop').addClass('disabled');
+
+                    $('#preloader').html("<div class='progress' style='margin-top: 15px;'><div class='indeterminate'></div></div>");
+                }
+            }
+        });
+    });
+
+    $("#ckb_db").change(function(){
+        if ($(this).prop("checked")) $("#ckb_autonew").attr("disabled", true)
+        else $("#ckb_autonew").removeAttr("disabled")
+    });
+
+</script>
+</body>
+</html>
